@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS news_items (
     rank INTEGER NOT NULL,
     url TEXT DEFAULT '',
     mobile_url TEXT DEFAULT '',
+    is_processed INTEGER DEFAULT 0,          -- 是否已被下游服务清洗处理（0=未处理，1=已处理）
     first_crawl_time TEXT NOT NULL,      -- 首次抓取时间
     last_crawl_time TEXT NOT NULL,       -- 最后抓取时间
     crawl_count INTEGER DEFAULT 1,       -- 抓取次数
@@ -106,6 +107,9 @@ CREATE INDEX IF NOT EXISTS idx_news_crawl_time ON news_items(last_crawl_time);
 
 -- 标题索引（用于标题搜索）
 CREATE INDEX IF NOT EXISTS idx_news_title ON news_items(title);
+
+-- 下游处理状态索引（FastAPI 清洗队列使用）
+CREATE INDEX IF NOT EXISTS idx_news_is_processed ON news_items(is_processed);
 
 -- URL + platform_id 唯一索引（仅对非空 URL，实现去重）
 CREATE UNIQUE INDEX IF NOT EXISTS idx_news_url_platform

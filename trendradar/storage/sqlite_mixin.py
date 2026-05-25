@@ -95,11 +95,20 @@ class SQLiteStorageMixin:
             if ai_filter_schema.exists():
                 with open(ai_filter_schema, "r", encoding="utf-8") as f:
                     conn.executescript(f.read())
+            self._migrate_news_schema(conn)
 
         if db_type == "rss":
             self._migrate_rss_schema(conn)
 
         conn.commit()
+
+    def _migrate_news_schema(self, conn: sqlite3.Connection) -> None:
+        """Migrate news_items for downstream processing state."""
+        cursor = conn.execute("PRAGMA table_info(news_items)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "is_processed" not in columns:
+            conn.execute("ALTER TABLE news_items ADD COLUMN is_processed INTEGER DEFAULT 0")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_news_is_processed ON news_items(is_processed)")
 
     def _migrate_rss_schema(self, conn: sqlite3.Connection) -> None:
         """迁移 rss_items 表结构（为已有数据库添加 guid 列）"""
@@ -111,6 +120,9 @@ class SQLiteStorageMixin:
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_rss_guid_feed
                 ON rss_items(guid, feed_id) WHERE guid != ''
             """)
+        if "is_processed" not in columns:
+            conn.execute("ALTER TABLE rss_items ADD COLUMN is_processed INTEGER DEFAULT 0")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_rss_is_processed ON rss_items(is_processed)")
 
     # ========================================
     # 新闻数据存储

@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS rss_items (
     published_at TEXT,                        -- RSS 发布时间（ISO 格式）
     summary TEXT,                             -- 摘要/描述
     author TEXT,                              -- 作者
+    is_processed INTEGER DEFAULT 0,           -- 是否已被下游服务清洗处理（0=未处理，1=已处理）
     first_crawl_time TEXT NOT NULL,           -- 首次抓取时间
     last_crawl_time TEXT NOT NULL,            -- 最后抓取时间
     crawl_count INTEGER DEFAULT 1,            -- 抓取次数
@@ -94,6 +95,9 @@ CREATE INDEX IF NOT EXISTS idx_rss_crawl_time ON rss_items(last_crawl_time);
 
 -- 标题索引（用于标题搜索）
 CREATE INDEX IF NOT EXISTS idx_rss_title ON rss_items(title);
+
+-- 下游处理状态索引（FastAPI 清洗队列使用）
+CREATE INDEX IF NOT EXISTS idx_rss_is_processed ON rss_items(is_processed);
 
 -- URL + feed_id 唯一索引（实现去重）
 CREATE UNIQUE INDEX IF NOT EXISTS idx_rss_url_feed

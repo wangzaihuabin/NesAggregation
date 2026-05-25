@@ -119,6 +119,18 @@ rss:
       name: "雅虎财经"
       url: "https://finance.yahoo.com/news/rssindex"
 
+    - id: "voa-chinese-news"
+      name: "美国之音中文新闻"
+      url: "https://www.voachinese.com/api/zm_yql-vomx-tpeybti"
+
+    - id: "nytimes-world"
+      name: "纽约时报 World"
+      url: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
+
+    - id: "zaobao-world"
+      name: "联合早报 国际即时"
+      url: "https://plink.anyfeeder.com/zaobao/realtime/world"
+
     # 自定义源示例
     # - id: "custom-feed"
     #   name: "自定义源"
@@ -238,7 +250,7 @@ display:
 #    配对项（如 Telegram token 和 chat_id）数量必须一致
 # ===============================================================
 notification:
-  enabled: true                       # 是否启用通知功能（true=启用, false=关闭）—— 总开关
+  enabled: false                      # 采集器模式：关闭通知，只负责抓取和入库
                                       # 开启 schedule 后此项仍为总开关：false=永远不推送，true=由调度控制
 
   # 推送渠道配置
@@ -290,7 +302,7 @@ storage:
   # - auto: 自动选择（GitHub Actions 且配置了远程存储 → remote，否则 → local）
   # - local: 本地 SQLite + TXT/HTML 文件
   # - remote: 远程云存储（S3 兼容协议，支持 R2/OSS/COS 等）
-  backend: "auto"
+  backend: "remote"
 
   # 数据格式选项
   formats:
@@ -389,7 +401,7 @@ ai:
 # 9. AI 分析功能（模型配置见上方 ai 段）
 # ===============================================================
 ai_analysis:
-  enabled: true                     # 是否启用 AI 分析（true=启用, false=关闭）—— 总开关
+  enabled: false                    # 采集器模式：关闭 AI 分析，后续交给 FastAPI 处理
                                     # 开启 schedule 后此项仍为总开关：false=永远不分析，true=由调度控制
 
   language: "Chinese"               # 分析报告语言（如 "English", "Korean", "法语"）
@@ -418,7 +430,7 @@ ai_analysis:
 # 对推送标题进行翻译，不包含 AI 分析的内容
 # ===============================================================
 ai_translation:
-  enabled: true                     # 是否启用翻译功能（true=启用, false=关闭）
+  enabled: false                    # 采集器模式：关闭 AI 翻译，后续交给 FastAPI 处理
   language: "中文"                   # 翻译目标语言（如 "English", "Korean", "法语"）
   prompt_file: "ai_translation_prompt.txt"   # 提示词文件（相对于 config 目录）
 
